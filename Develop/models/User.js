@@ -10,15 +10,26 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
-    score: {
-      type: Number,
+    email: {
+      type: String,
       required: true,
-      default: () => Math.floor(Math.random() * (100 - 70 + 1) + 70),
     },
-    createdAt: {
-      type: Date,
-      default: Date.now,
-    },
+    thoughts: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Thought',
+      },
+    ],
+    friends: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Thought',
+      },
+    ],
+    // createdAt: {
+    //   type: Date,
+    //   default: Date.now,
+    // },
   },
   {
     toJSON: {
@@ -27,5 +38,13 @@ const userSchema = new Schema(
     id: false,
   }
 );
+
+
+
+// Create a virtual property `commentCount` that gets the amount of comments per post
+postSchema.virtual('friendCount').get(function () {
+  return this.friends.length;
+});
+
 
 module.exports = userSchema;
