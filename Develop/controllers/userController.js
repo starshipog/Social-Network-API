@@ -7,7 +7,7 @@ const headCount = async () => {
   return numberOfusers;
 }
 
-const grade = async (userId) =>
+const reaction = async (userId) =>
 User.aggregate([
 
     { $match: { _id: new ObjectId(userId) } },
@@ -17,14 +17,14 @@ User.aggregate([
     {
       $group: {
         _id: new ObjectId(userId),
-        overallGrade: { $avg: '$reactions.score' },
+        overallReaction: { $avg: '$reactions.score' },
       },
     },
   ]);
 
 module.exports = {
 
-  async getusers(req, res) {
+  async getUsers(req, res) {
     try {
       const users = await User.find();
 
@@ -40,7 +40,7 @@ module.exports = {
     }
   },
 
-  async getSingleuser(req, res) {
+  async getSingleUser(req, res) {
     try {
       const user = await User.findOne({ _id: req.params.userId })
         .select('-__v');
@@ -51,7 +51,7 @@ module.exports = {
 
       res.json({
         user,
-        grade: await grade(req.params.userId),
+        reaction: await reaction(req.params.userId),
       });
     } catch (err) {
       console.log(err);
@@ -59,7 +59,7 @@ module.exports = {
     }
   },
 
-  async createuser(req, res) {
+  async createUser(req, res) {
     try {
       const user = await User.create(req.body);
       res.json(user);
@@ -68,7 +68,7 @@ module.exports = {
     }
   },
 
-  async deleteuser(req, res) {
+  async deleteUser(req, res) {
     try {
       const user = await User.findOneAndRemove({ _id: req.params.userId });
 

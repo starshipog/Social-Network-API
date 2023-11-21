@@ -37,11 +37,11 @@ connection.once('open', async () => {
 
   await User.collection.insertMany(users);
 
-  // await Thoughts.collection.insertOne({
-  //   thoughtsName: 'Great day',
-  //   inPerson: false,
-  //   users: [...users],
-  // });
+  await Thoughts.collection.insertOne({
+    thoughtsName: 'Great day',
+    inPerson: false,
+    users: [...users],
+  });
 
   console.table(users);
   console.info('Seeding complete! 🌱');
