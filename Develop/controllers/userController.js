@@ -1,12 +1,10 @@
 const { ObjectId } = require('mongoose').Types;
-const { User, Thought } = require('../models');
-
-
+const { User, thought } = require('../models');
 
 const headCount = async () => {
-  const numberOfUser = await User.aggregate()
+  const numberOfusers = await User.aggregate()
     .count('userCount');
-  return numberOfUser;
+  return numberOfusers;
 }
 
 const grade = async (userId) =>
@@ -14,20 +12,21 @@ User.aggregate([
 
     { $match: { _id: new ObjectId(userId) } },
     {
-      $unwind: '$thought',
+      $unwind: '$assignments',
     },
     {
       $group: {
         _id: new ObjectId(userId),
-        overallGrade: { $avg: '$users.thought' },
+        overallGrade: { $avg: '$assignments.score' },
       },
     },
   ]);
 
 module.exports = {
-  async getUser(req, res) {
+
+  async getusers(req, res) {
     try {
-      const user = await User.find();
+      const users = await User.find();
 
       const userObj = {
         users,
@@ -40,9 +39,10 @@ module.exports = {
       return res.status(500).json(err);
     }
   },
-  async getSingleUser(req, res) {
+
+  async getSingleuser(req, res) {
     try {
-      const user = await Users.findOne({ _id: req.params.userId })
+      const user = await User.findOne({ _id: req.params.userId })
         .select('-__v');
 
       if (!user) {
@@ -58,16 +58,17 @@ module.exports = {
       return res.status(500).json(err);
     }
   },
-  async createUser(req, res) {
+
+  async createuser(req, res) {
     try {
-      const users = await User.create(req.body);
+      const user = await User.create(req.body);
       res.json(user);
     } catch (err) {
       res.status(500).json(err);
     }
   },
 
-  async deleteUser(req, res) {
+  async deleteuser(req, res) {
     try {
       const user = await User.findOneAndRemove({ _id: req.params.userId });
 
@@ -83,56 +84,58 @@ module.exports = {
 
       if (!thought) {
         return res.status(404).json({
-          message: 'User deleted, but no thoughts found',
+          message: 'user deleted, but no thoughts found',
         });
       }
 
-      res.json({ message: 'User successfully deleted' });
+      res.json({ message: 'user successfully deleted' });
     } catch (err) {
       console.log(err);
       res.status(500).json(err);
     }
   },
 
-  async addThought(req, res) {
-    console.log('You are adding an thought');
-    console.log(req.body);
+  // // Add an assignment to a user
+  // async addAssignment(req, res) {
+  //   console.log('You are adding an assignment');
+  //   console.log(req.body);
 
-    try {
-      const user = await User.findOneAndUpdate(
-        { _id: req.params.userId },
-        { $addToSet: { assignments: req.body } },
-        { runValidators: true, new: true }
-      );
+  //   try {
+  //     const user = await User.findOneAndUpdate(
+  //       { _id: req.params.userId },
+  //       { $addToSet: { assignments: req.body } },
+  //       { runValidators: true, new: true }
+  //     );
 
-      if (!user) {
-        return res
-          .status(404)
-          .json({ message: 'No user found with that ID :(' });
-      }
+  //     if (!user) {
+  //       return res
+  //         .status(404)
+  //         .json({ message: 'No user found with that ID :(' });
+  //     }
 
-      res.json(user);
-    } catch (err) {
-      res.status(500).json(err);
-    }
-  },
-  async removeThought(req, res) {
-    try {
-      const user = await User.findOneAndUpdate(
-        { _id: req.params.userId },
-        { $pull: { thought: { thoughtId: req.params.thoughtId } } },
-        { runValidators: true, new: true }
-      );
+  //     res.json(user);
+  //   } catch (err) {
+  //     res.status(500).json(err);
+  //   }
+  // },
+  // // Remove assignment from a user
+  // async removeAssignment(req, res) {
+  //   try {
+  //     const user = await User.findOneAndUpdate(
+  //       { _id: req.params.userId },
+  //       { $pull: { assignment: { assignmentId: req.params.assignmentId } } },
+  //       { runValidators: true, new: true }
+  //     );
 
-      if (!user) {
-        return res
-          .status(404)
-          .json({ message: 'No user found with that ID :(' });
-      }
+  //     if (!user) {
+  //       return res
+  //         .status(404)
+  //         .json({ message: 'No user found with that ID :(' });
+  //     }
 
-      res.json(user);
-    } catch (err) {
-      res.status(500).json(err);
-    }
-  },
+  //     res.json(user);
+  //   } catch (err) {
+  //     res.status(500).json(err);
+  //   }
+  // },
 };
