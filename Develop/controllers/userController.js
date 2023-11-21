@@ -12,12 +12,12 @@ User.aggregate([
 
     { $match: { _id: new ObjectId(userId) } },
     {
-      $unwind: '$assignments',
+      $unwind: '$reactions',
     },
     {
       $group: {
         _id: new ObjectId(userId),
-        overallGrade: { $avg: '$assignments.score' },
+        overallGrade: { $avg: '$reactions.score' },
       },
     },
   ]);
@@ -95,47 +95,47 @@ module.exports = {
     }
   },
 
-  // // Add an assignment to a user
-  // async addAssignment(req, res) {
-  //   console.log('You are adding an assignment');
-  //   console.log(req.body);
+  async addReaction(req, res) {
+    console.log('You are adding an reaction');
+    console.log(req.body);
 
-  //   try {
-  //     const user = await User.findOneAndUpdate(
-  //       { _id: req.params.userId },
-  //       { $addToSet: { assignments: req.body } },
-  //       { runValidators: true, new: true }
-  //     );
+    try {
+      const user = await User.findOneAndUpdate(
+        { _id: req.params.userId },
+        { $addToSet: { reactions: req.body } },
+        { runValidators: true, new: true }
+      );
 
-  //     if (!user) {
-  //       return res
-  //         .status(404)
-  //         .json({ message: 'No user found with that ID :(' });
-  //     }
+      if (!user) {
+        return res
+          .status(404)
+          .json({ message: 'No user found with that ID :(' });
+      }
 
-  //     res.json(user);
-  //   } catch (err) {
-  //     res.status(500).json(err);
-  //   }
-  // },
-  // // Remove assignment from a user
-  // async removeAssignment(req, res) {
-  //   try {
-  //     const user = await User.findOneAndUpdate(
-  //       { _id: req.params.userId },
-  //       { $pull: { assignment: { assignmentId: req.params.assignmentId } } },
-  //       { runValidators: true, new: true }
-  //     );
+      res.json(user);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
 
-  //     if (!user) {
-  //       return res
-  //         .status(404)
-  //         .json({ message: 'No user found with that ID :(' });
-  //     }
 
-  //     res.json(user);
-  //   } catch (err) {
-  //     res.status(500).json(err);
-  //   }
-  // },
+  async removeReaction(req, res) {
+    try {
+      const user = await User.findOneAndUpdate(
+        { _id: req.params.userId },
+        { $pull: { reaction: { reactionId: req.params.reactionId } } },
+        { runValidators: true, new: true }
+      );
+
+      if (!user) {
+        return res
+          .status(404)
+          .json({ message: 'No user found with that ID :(' });
+      }
+
+      res.json(user);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
 };

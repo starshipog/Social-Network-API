@@ -41,7 +41,6 @@ const userSchema = new Schema(
 
 
 
-// Create a virtual property `commentCount` that gets the amount of comments per post
 postSchema.virtual('friendCount').get(function () {
   return this.friends.length;
 });
